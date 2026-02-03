@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Be my Valentine?</title>
+  <style>
+    :root{
+      --bg1:#ffdde1;
+      --bg2:#ee9ca7;
+      --card:#ffffffcc;
+      --text:#1f1f1f;
+      --yes:#22c55e;
+      --yesHover:#16a34a;
+      --no:#ef4444;
+      --shadow: 0 20px 60px rgba(0,0,0,.18);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 20% 10%, #fff7, transparent 60%),
+                  radial-gradient(900px 600px at 85% 20%, #fff6, transparent 55%),
+                  linear-gradient(135deg,var(--bg1),var(--bg2));
+      overflow:hidden;
+    }
+
+    .card{
+      width:min(680px, 92vw);
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius:24px;
+      box-shadow: var(--shadow);
+      padding: 28px 22px 22px;
+      text-align:center;
+      position:relative;
+    }
+
+    h1{
+      margin: 4px 0 10px;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing:-.02em;
+    }
+
+    .sub{
+      margin: 0 auto 18px;
+      max-width: 46ch;
+      font-size: 16px;
+      opacity:.9;
+    }
+
+    .gif{
+      width: min(360px, 78vw);
+      aspect-ratio: 1 / 1;
+      border-radius: 20px;
+      overflow:hidden;
+      margin: 14px auto 18px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.12);
+      border: 1px solid rgba(255,255,255,.55);
+      background:#fff;
+    }
+
+    .gif img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .btnRow{
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      margin-top:10px;
+      position:relative;
+      padding-bottom: 6px;
+    }
+
+    button{
+      border:0;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor:pointer;
+      transition: transform .08s ease, filter .15s ease, background .15s ease;
+      user-select:none;
+      min-width: 120px;
+    }
+
+    #yesBtn{ background: var(--yes); color:white; }
+    #yesBtn:hover{ background: var(--yesHover); transform: translateY(-1px); }
+
+    #noBtn{
+      background: var(--no);
+      color:white;
+      position: relative; /* becomes absolute when dodging */
+    }
+
+    .footer{
+      margin-top: 14px;
+      font-size: 12px;
+      opacity: .75;
+    }
+
+    .heart{
+      position:fixed;
+      font-size: 18px;
+      pointer-events:none;
+      opacity:.85;
+      animation: floatUp linear forwards;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,.18));
+    }
+    @keyframes floatUp{
+      from { transform: translateY(0) scale(.9); opacity:.9; }
+      to   { transform: translateY(-120vh) scale(1.15); opacity:0; }
+    }
+
+    .hidden{ display:none; }
+
+    .success h2{
+      margin: 6px 0 10px;
+      font-size: clamp(22px, 3.2vw, 34px);
+    }
+    .success p{
+      margin: 0 auto 10px;
+      max-width: 52ch;
+      opacity:.9;
+    }
+
+    .pill{
+      display:inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(255,255,255,.7);
+      font-weight: 650;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <main class="card" id="card">
+    <script>
+      // ✅ Updated names
+      const HER_NAME = "Alexis";
+      const YOUR_NAME = "Devin";
+
+      const ASK_LINE = `Hey ${HER_NAME}… 💘`;
+      const QUESTION = "Will you be my Valentine?";
+      const SUBTEXT = "Be honest. Choose wisely. (This website is extremely serious.)";
+
+      const YES_MESSAGE_TITLE = `YAY!! 🥹💞`;
+      const YES_MESSAGE_BODY = `Best decision you’ve ever made, ${HER_NAME}. I love you.\n\n— ${YOUR_NAME}`;
+      const YES_PILL = "Screenshot this and send it to me 😌";
+
+      // These GIFs are loaded from external URLs (not embedded in the file)
+      const GIF_ASK = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3o0Y2E0dDZkZ2N4d2c4dG5oZ2Y4Y3Q4b2w3bG9wdG5qZ3V0eSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l0HlNQ03J5JxX6lva/giphy.gif";
+      const GIF_YES = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYzZ6bGx6dG5oN3E5Z3o5N2d4YjV5bGJvM3c5bGJjMGx0d2lqMyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3oz8xsaLjLVqVXr3tS/giphy.gif";
+    </script>
+
+    <h1 id="askLine"></h1>
+    <p class="sub" id="subtext"></p>
+
+    <div class="gif" aria-hidden="true">
+      <img id="gifImg" alt="Valentine gif" />
+    </div>
+
+    <h1 id="question"></h1>
+
+    <div class="btnRow" id="btnRow">
+      <button id="yesBtn">Yes</button>
+      <button id="noBtn">No</button>
+    </div>
+
+    <div class="footer">Made with love (and a little bit of sabotage).</div>
+
+    <section class="success hidden" id="success">
+      <h2 id="yesTitle"></h2>
+      <p id="yesBody" style="white-space:pre-line;"></p>
+      <div class="pill" id="yesPill"></div>
+    </section>
+  </main>
+
+  <script>
+    const askLineEl = document.getElementById("askLine");
+    const questionEl = document.getElementById("question");
+    const subtextEl = document.getElementById("subtext");
+    const gifImg = document.getElementById("gifImg");
+
+    const success = document.getElementById("success");
+    const btnRow = document.getElementById("btnRow");
+    const yesTitle = document.getElementById("yesTitle");
+    const yesBody = document.getElementById("yesBody");
+    const yesPill = document.getElementById("yesPill");
+
+    askLineEl.textContent = ASK_LINE;
+    questionEl.textContent = QUESTION;
+    subtextEl.textContent = SUBTEXT;
+    gifImg.src = GIF_ASK;
+
+    function spawnHeart() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.textContent = Math.random() < 0.5 ? "💗" : "💘";
+      heart.style.left = (Math.random() * 100) + "vw";
+      heart.style.bottom = "-40px";
+      const dur = 5 + Math.random() * 5;
+      heart.style.animationDuration = dur + "s";
+      heart.style.fontSize = (14 + Math.random() * 18) + "px";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), dur * 1000);
+    }
+
+    let heartTimer = null;
+
+    document.getElementById("yesBtn").addEventListener("click", () => {
+      gifImg.src = GIF_YES;
+
+      disableNoDodge();
+
+      btnRow.classList.add("hidden");
+      success.classList.remove("hidden");
+      questionEl.classList.add("hidden");
+      subtextEl.classList.add("hidden");
+      askLineEl.textContent = `Okay ${HER_NAME}…`;
+      yesTitle.textContent = YES_MESSAGE_TITLE;
+      yesBody.textContent = YES_MESSAGE_BODY;
+      yesPill.textContent = YES_PILL;
+
+      for (let i=0;i<20;i++) setTimeout(spawnHeart, i*120);
+      if (!heartTimer) heartTimer = setInterval(spawnHeart, 450);
+    });
+
+    const noBtn = document.getElementById("noBtn");
+    const card = document.getElementById("card");
+    let dodging = true;
+
+    function dodge() {
+      if (!dodging) return;
+
+      noBtn.style.position = "absolute";
+
+      const rect = card.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const pad = 18;
+      const maxX = rect.width - btnRect.width - pad;
+      const maxY = rect.height - btnRect.height - pad;
+
+      const x = pad + Math.random() * maxX;
+      const y = rect.height * (0.55 + Math.random() * 0.25);
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = Math.min(y, maxY) + "px";
+
+      noBtn.style.transform = "translateY(-1px)";
+      setTimeout(() => (noBtn.style.transform = ""), 80);
+    }
+
+    function enableNoDodge() {
+      dodging = true;
+      noBtn.addEventListener("mouseenter", dodge);
+      noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); dodge(); }, {passive:false});
+    }
+
+    function disableNoDodge() {
+      dodging = false;
+      noBtn.style.position = "relative";
+      noBtn.style.left = "";
+      noBtn.style.top = "";
+    }
+
+    enableNoDodge();
+
+    noBtn.addEventListener("click", () => {
+      if (!dodging) return;
+      subtextEl.textContent = "Nice try 😌";
+      spawnHeart();
+    });
+  </script>
+</body>
+</html>
